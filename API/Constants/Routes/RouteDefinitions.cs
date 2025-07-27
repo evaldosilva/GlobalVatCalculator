@@ -1,7 +1,9 @@
 ﻿namespace GlobalVatCalculator.API.Constants.Routes;
 
-public static class RouteDefinitions
+internal static class RouteDefinitions
 {
+    public const string ApplicationJson = "application/json";
+
     public static class ContactInfo
     {
         public const string Name = "Evaldo Silva";
@@ -15,5 +17,6 @@ public static class RouteDefinitions
         public const string Version = "v1";
         public const string Base = "api/v1/[controller]";
         public const string PriceCalculatorEndpoint = "PriceCalculator";
+        public const string PriceCalculatorEndpointDesc = "Calculates the final price, including VAT, based on the provided price requestnand VAT tax.";
     }
 }

@@ -12,13 +12,13 @@ public class PriceRequest : IValidatableObject
     [Description(PriceMetadata.VATRate_request_desc)]
     public int VATRate { get; set; }
 
-    [Description("Gets or sets the Gross value amount.")]
+    [Description(PriceMetadata.GrossValue_request_desc)]
     public decimal? GrossValue { get; set; }
 
-    [Description("Gets or sets the Net value amount.")]
+    [Description(PriceMetadata.NetValue_request_desc)]
     public decimal? NetValue { get; set; }
 
-    [Description("Gets or sets the value-added tax (VAT) amount.")]
+    [Description()]
     public decimal? VATValue { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

@@ -3,26 +3,19 @@ using Domain.VatCalculator.Models;
 
 namespace Service.VatCalculator.Validator;
 
-public class PriceValidator : IPriceValidator
+public class PriceValidator(IPriceValidationHandler priceValidationHandler) : IPriceValidator
 {
-    public bool Validate(Price price)
-    {
-        if(price == null)
-            return false;
+    private IPriceValidationHandler _priceValidationHandler = priceValidationHandler;
 
-        // Some must have value
-        if (price.NetValue.HasValue || price.GrossValue.HasValue || price.VATValue.HasValue)
-        {
-            // But just one must have value
-            if (price.NetValue.HasValue && price.GrossValue.HasValue)
-                return false;
-            else if (price.NetValue.HasValue && price.VATValue.HasValue)
-                return false;
-            else if (price.GrossValue.HasValue && price.VATValue.HasValue)
-                return false;
-            else
-                return true;
-        }
-        return false;
+    public bool IsValid() => _priceValidationHandler.IsValid;
+
+    public void Validate(Price price)
+    {
+        _priceValidationHandler.Handle(price);
+    }
+
+    public void SetHandler(IPriceValidationHandler priceValidationHandler)
+    {
+        _priceValidationHandler = priceValidationHandler;
     }
 }

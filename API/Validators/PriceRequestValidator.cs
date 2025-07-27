@@ -1,37 +1,42 @@
-﻿using Domain.VatCalculator.Entities;
-using Domain.VatCalculator.Interfaces.Validator;
+﻿using Domain.VatCalculator.Interfaces.Validator;
 using GlobalVatCalculator.API.Constants.Messages;
+using GlobalVatCalculator.API.Mappings;
 using GlobalVatCalculator.API.Requests;
 using GlobalVatCalculator.API.Validators.Interface;
+using Service.VatCalculator.Validator;
 using System.ComponentModel.DataAnnotations;
 
 namespace GlobalVatCalculator.API.Validators;
 
-public class PriceRequestValidator(IPriceValidator priceValidator, IVatRateValidator vatRateValidator) : IPriceRequestValidator
+public class PriceRequestValidator(IPriceValidator priceValidator) : IPriceRequestValidator
 {
     private readonly IPriceValidator _priceValidator = priceValidator;
-    private readonly IVatRateValidator _vatRateValidator = vatRateValidator;
 
     public IEnumerable<ValidationResult> Validate(PriceRequest priceRequest)
     {
         List<ValidationResult> validationResults = [];
-        VatRate vatRate = new(priceRequest.VATRate);
+        var price = PriceRequestMapper.MapPriceRequestToPrice(priceRequest);
 
-        if (!_vatRateValidator.Validate(vatRate))
-        {
+        _priceValidator.Validate(price);
+        if (_priceValidator.IsValid() is not true)
+            validationResults.Add(new ValidationResult(
+                ValidationMessages.PricesMissingOrInvalid,
+                [nameof(priceRequest.VATValue), nameof(priceRequest.NetValue), nameof(priceRequest.GrossValue)]));
+
+        _priceValidator.SetHandler(new PriceMultipleInputValidator());
+        _priceValidator.Validate(price);
+        if (_priceValidator.IsValid() is not true)
+            validationResults.Add(new ValidationResult(
+                ValidationMessages.PricesMultipleInput,
+                [nameof(priceRequest.VATValue), nameof(priceRequest.NetValue), nameof(priceRequest.GrossValue)]));
+
+        _priceValidator.SetHandler(new PriceVATTaxRateValidator());
+        _priceValidator.Validate(price);
+        if (_priceValidator.IsValid() is not true)
             validationResults.Add(new ValidationResult(
                 ValidationMessages.VatRateInvalid,
                 [nameof(priceRequest.VATRate)]));
-        }
 
         return validationResults;
-
-        // TODO : Use on IEndpointFilter
-
-        //var vr = new ValidationResult(
-        //        "At least one of the values (NetValue, GrossValue, VATValue) must be provided.",
-        //        [nameof(NetValue), nameof(GrossValue), nameof(VATValue)]);
-        //var validationResults = new List<ValidationResult>();
-        //Validator.TryValidateObject(this, validationContext, validationResults);
     }
 }

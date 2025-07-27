@@ -12,7 +12,7 @@ public static class PriceResultMapper
             NetValue = price.NetValue,
             GrossValue = price.GrossValue,
             VATValue = price.VATValue,
-            VATTaxRate = price.VATTaxRate.Rate
+            VATTaxRate = price?.VATTaxRate?.Rate ?? 0
         };
     }
 }

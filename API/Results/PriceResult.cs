@@ -1,18 +1,19 @@
-﻿using System.ComponentModel;
+﻿using GlobalVatCalculator.API.Constants.Metadata;
+using System.ComponentModel;
 
 namespace GlobalVatCalculator.API.Results;
 
 public class PriceResult
 {
-    [Description("The VAT tax rate as a percentage.")]
+    [Description(PriceMetadata.VATTaxRate_result_desc)]
     public double VATTaxRate { get; set; }
 
-    [Description("Calculated or provided Net value amount.")]
+    [Description(PriceMetadata.NetValue_result_desc)]
     public decimal? NetValue { get; set; }
 
-    [Description("Calculated or provided value-added tax (VAT) amount.")]
+    [Description(PriceMetadata.VATValue_result_desc)]
     public decimal? VATValue { get; set; }
 
-    [Description("Calculated or provided Gross value amount.")]
+    [Description(PriceMetadata.GrossValue_result_desc)]
     public decimal? GrossValue { get; set; }
 }

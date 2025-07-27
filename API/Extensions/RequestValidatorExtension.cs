@@ -10,7 +10,7 @@ public static class RequestValidatorExtension
     public static IServiceCollection AddRequestValidators(this IServiceCollection services)
     {
         return services
-            .AddScoped<IVatRateValidator, VatRateValidator>()
+            .AddScoped<IPriceValidationHandler, PriceMissingValidator>()
             .AddScoped<IPriceValidator, PriceValidator>()
             .AddScoped<IPriceRequestValidator, PriceRequestValidator>();
     }
