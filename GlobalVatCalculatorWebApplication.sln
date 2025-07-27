@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{613442E6-4EAD-42FD-97B8-DF956CE61F9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{CB2C814D-4ABB-42EC-9784-E63E90E159D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{8C011A0B-BE23-4009-8B12-B54788803947}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlobalVatCalculator.API", "API\GlobalVatCalculator.API.csproj", "{92310178-A0B0-56A5-17F7-0D27D47B2189}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.VatCalculator", "Domain\Domain.VatCalculator\Domain.VatCalculator.csproj", "{D4CAB537-6FF1-4B04-95AA-BB879AA9CF49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.VatCalculator", "Service\Service.VatCalculator\Service.VatCalculator.csproj", "{CB6AF620-502E-4EC5-B2C3-05085F79BFC8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92310178-A0B0-56A5-17F7-0D27D47B2189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92310178-A0B0-56A5-17F7-0D27D47B2189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92310178-A0B0-56A5-17F7-0D27D47B2189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92310178-A0B0-56A5-17F7-0D27D47B2189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4CAB537-6FF1-4B04-95AA-BB879AA9CF49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4CAB537-6FF1-4B04-95AA-BB879AA9CF49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4CAB537-6FF1-4B04-95AA-BB879AA9CF49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4CAB537-6FF1-4B04-95AA-BB879AA9CF49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB6AF620-502E-4EC5-B2C3-05085F79BFC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB6AF620-502E-4EC5-B2C3-05085F79BFC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB6AF620-502E-4EC5-B2C3-05085F79BFC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB6AF620-502E-4EC5-B2C3-05085F79BFC8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{92310178-A0B0-56A5-17F7-0D27D47B2189} = {613442E6-4EAD-42FD-97B8-DF956CE61F9B}
+		{D4CAB537-6FF1-4B04-95AA-BB879AA9CF49} = {CB2C814D-4ABB-42EC-9784-E63E90E159D4}
+		{CB6AF620-502E-4EC5-B2C3-05085F79BFC8} = {8C011A0B-BE23-4009-8B12-B54788803947}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {44770148-047B-475E-8681-85BD0740C5D0}
+	EndGlobalSection
+EndGlobal
