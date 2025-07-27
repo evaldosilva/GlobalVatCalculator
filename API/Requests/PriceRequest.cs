@@ -1,12 +1,10 @@
 ﻿using GlobalVatCalculator.API.Constants.Metadata;
-using GlobalVatCalculator.API.Validators.Interface;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace GlobalVatCalculator.API.Requests;
 
-public class PriceRequest : IValidatableObject
+public class PriceRequest
 {
     [JsonPropertyName(PriceMetadata.VATRate_field_desc)]
     [Description(PriceMetadata.VATRate_request_desc)]
@@ -18,10 +16,6 @@ public class PriceRequest : IValidatableObject
     [Description(PriceMetadata.NetValue_request_desc)]
     public decimal? NetValue { get; set; }
 
-    [Description()]
+    [Description(PriceMetadata.VATValue_result_desc)]
     public decimal? VATValue { get; set; }
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        => validationContext.GetRequiredService<IPriceRequestValidator>()
-                            .Validate(this);
 }

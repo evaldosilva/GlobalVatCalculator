@@ -1,4 +1,5 @@
-﻿using Domain.VatCalculator.Models;
+﻿using Domain.VatCalculator.Entities;
+using Domain.VatCalculator.Models;
 using GlobalVatCalculator.API.Requests;
 
 namespace GlobalVatCalculator.API.Mappings;
@@ -9,10 +10,10 @@ public static class PriceRequestMapper
     {
         return new Price
         {
-            NetValue = priceRequest.NetValue,
-            GrossValue = priceRequest.GrossValue,
-            VATValue = priceRequest.VATValue,
-            VATTaxRate = new(priceRequest.VATRate)
+            NetValue = priceRequest?.NetValue,
+            GrossValue = priceRequest?.GrossValue,
+            VATValue = priceRequest?.VATValue,
+            VATTaxRate = new VatRate(priceRequest.VATRate)
         };
     }
 }

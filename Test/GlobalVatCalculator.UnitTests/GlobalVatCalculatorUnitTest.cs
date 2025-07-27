@@ -9,7 +9,7 @@ public class GlobalVatCalculatorUnitTest
 {
     //     public void Should_When()
     [Fact]
-    public void Should_calculate_When_set_Net_amount()
+    public async Task Should_calculate_When_set_Net_amount()
     {
         VatCalculatorService vatCalculatorService = new();
 
@@ -19,15 +19,15 @@ public class GlobalVatCalculatorUnitTest
             NetValue = 100
         };
 
-        vatCalculatorService.CalculateVat(price);
+        var calculatedPrice = await vatCalculatorService.CalculateVat(price);
 
-        Check.That(price.GrossValue.Value).IsEqualTo(120);
-        Check.That(price.NetValue.Value).IsEqualTo(100);
-        Check.That(price.VATValue.Value).IsEqualTo(20);
+        Check.That(calculatedPrice?.GrossValue).IsEqualTo(120);
+        Check.That(calculatedPrice?.NetValue).IsEqualTo(100);
+        Check.That(calculatedPrice?.VATValue).IsEqualTo(20);
     }
 
     [Fact]
-    public void Should_calculate_When_set_Gross_amount()
+    public async Task Should_calculate_When_set_Gross_amount()
     {
         VatCalculatorService vatCalculatorService = new();
 
@@ -37,15 +37,15 @@ public class GlobalVatCalculatorUnitTest
             GrossValue = 135.60m
         };
 
-        vatCalculatorService.CalculateVat(price);
+        var calculatedPrice = await vatCalculatorService.CalculateVat(price);
 
-        Check.That(price.GrossValue.Value).IsEqualTo(135.60m);
-        Check.That(price.NetValue.Value).IsEqualTo(120);
-        Check.That(price.VATValue.Value).IsEqualTo(15.60m);
+        Check.That(calculatedPrice?.GrossValue).IsEqualTo(135.60m);
+        Check.That(calculatedPrice?.NetValue).IsEqualTo(120);
+        Check.That(calculatedPrice?.VATValue).IsEqualTo(15.60m);
     }
 
     [Fact]
-    public void Should_calculate_When_set_VAT_amount()
+    public async Task Should_calculate_When_set_VAT_amount()
     {
         VatCalculatorService vatCalculatorService = new();
 
@@ -55,22 +55,22 @@ public class GlobalVatCalculatorUnitTest
             VATValue = 50
         };
 
-        vatCalculatorService.CalculateVat(price);
+        var calculatedPrice = await vatCalculatorService.CalculateVat(price);
 
-        Check.That(price.GrossValue.Value).IsEqualTo(550);
-        Check.That(price.NetValue.Value).IsEqualTo(500);
-        Check.That(price.VATValue.Value).IsEqualTo(50);
+        Check.That(calculatedPrice?.GrossValue).IsEqualTo(550);
+        Check.That(calculatedPrice?.NetValue).IsEqualTo(500);
+        Check.That(calculatedPrice?.VATValue).IsEqualTo(50);
     }
 
     [Theory, MemberData(nameof(WrongPrices))]
-    public void Should_Not_calculate_When_set_multiple_invalid_input_values(Price price)
+    public async Task Should_Not_calculate_When_set_multiple_invalid_input_values(Price price)
     {
         VatCalculatorService vatCalculatorService = new();
-        vatCalculatorService.CalculateVat(price);
+        var calculatedPrice = await vatCalculatorService.CalculateVat(price);
 
-        Check.That(price.GrossValue).IsEqualTo(price.GrossValue);
-        Check.That(price.NetValue).IsEqualTo(price.NetValue);
-        Check.That(price.VATValue).IsEqualTo(price.VATValue);
+        Check.That(calculatedPrice?.GrossValue).IsEqualTo(price.GrossValue);
+        Check.That(calculatedPrice?.NetValue).IsEqualTo(price.NetValue);
+        Check.That(calculatedPrice?.VATValue).IsEqualTo(price.VATValue);
     }
 
     public static TheoryData<Price> WrongPrices
@@ -136,6 +136,14 @@ public class GlobalVatCalculatorUnitTest
             { new()
                 {
                     VATTaxRate = null,
+                    GrossValue = 120.00m,
+                    NetValue = null,
+                    VATValue = null
+                }
+            },
+            { new()
+                {
+                    VATTaxRate = new VatRate(0),
                     GrossValue = 120.00m,
                     NetValue = null,
                     VATValue = null

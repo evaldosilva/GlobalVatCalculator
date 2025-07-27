@@ -1,5 +1,6 @@
 ﻿using Domain.VatCalculator.Interfaces.Service;
 using GlobalVatCalculator.API.Constants.Routes;
+using GlobalVatCalculator.API.Filters;
 using GlobalVatCalculator.API.Mappings;
 using GlobalVatCalculator.API.Requests;
 using GlobalVatCalculator.API.Results;
@@ -9,9 +10,14 @@ namespace GlobalVatCalculator.API.Controllers;
 
 [ApiController]
 [Route(RouteDefinitions.V1.Base)]
-public class VatCalculatorController(IVatCalculator vatCalculator) : ControllerBase
+public class VatCalculatorController : ControllerBase
 {
-    private readonly IVatCalculator _vatCalculator = vatCalculator;
+    private readonly IVatCalculator _vatCalculator;
+
+    public VatCalculatorController(IVatCalculator vatCalculator)
+    {
+        _vatCalculator = vatCalculator;
+    }
 
     [HttpPost(RouteDefinitions.V1.PriceCalculatorEndpoint)]
     [ProducesResponseType(typeof(PriceResult), StatusCodes.Status200OK)]
@@ -20,6 +26,7 @@ public class VatCalculatorController(IVatCalculator vatCalculator) : ControllerB
     [Produces(RouteDefinitions.ApplicationJson)]
     [Consumes(RouteDefinitions.ApplicationJson)]
     [EndpointDescription(RouteDefinitions.V1.PriceCalculatorEndpointDesc)]
+    [ServiceFilter(typeof(PriceCalculatorFilter))]
     public async ValueTask<IActionResult> PriceCalculator([FromBody] PriceRequest priceRequest)
     {
         var price = PriceRequestMapper.MapPriceRequestToPrice(priceRequest);

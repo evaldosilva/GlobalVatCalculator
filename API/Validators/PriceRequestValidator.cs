@@ -12,9 +12,45 @@ public class PriceRequestValidator(IPriceValidator priceValidator) : IPriceReque
 {
     private readonly IPriceValidator _priceValidator = priceValidator;
 
-    public IEnumerable<ValidationResult> Validate(PriceRequest priceRequest)
+    public ValueTask<IEnumerable<ValidationResult>> Validate(PriceRequest priceRequest)
     {
         List<ValidationResult> validationResults = [];
+        bool IsSomeAmountValid = false;
+
+        if (priceRequest?.NetValue == null || priceRequest?.NetValue == 0)
+            validationResults.Add(new ValidationResult(
+                string.Format(ValidationMessages.InvalidNonNumeric, priceRequest?.NetValue, nameof(priceRequest.NetValue)),
+                [nameof(priceRequest.NetValue)]));
+        else
+            IsSomeAmountValid = true;
+
+        if (IsSomeAmountValid is false)
+            if (priceRequest?.VATValue == null || priceRequest?.VATValue == 0)
+                validationResults.Add(new ValidationResult(
+                    string.Format(ValidationMessages.InvalidNonNumeric, priceRequest?.VATValue, nameof(priceRequest.VATValue)),
+                    [nameof(priceRequest.VATValue)]));
+            else
+                IsSomeAmountValid = true;
+
+        if (IsSomeAmountValid is false)
+            if (priceRequest?.GrossValue == null || priceRequest?.GrossValue == 0)
+                validationResults.Add(new ValidationResult(
+                    string.Format(ValidationMessages.InvalidNonNumeric, priceRequest?.GrossValue, nameof(priceRequest.GrossValue)),
+                    [nameof(priceRequest.GrossValue)]));
+            else
+                IsSomeAmountValid = true;
+
+        if (IsSomeAmountValid)
+            validationResults.Clear();
+
+        if (priceRequest?.VATRate == 0)
+            validationResults.Add(new ValidationResult(
+                string.Format(ValidationMessages.InvalidNonNumeric, priceRequest?.VATRate, nameof(priceRequest.VATRate)),
+                [nameof(priceRequest.VATRate)]));
+
+        if (validationResults.Count is not 0)
+            return ValueTask.FromResult<IEnumerable<ValidationResult>>(validationResults);
+
         var price = PriceRequestMapper.MapPriceRequestToPrice(priceRequest);
 
         _priceValidator.Validate(price);
@@ -37,6 +73,6 @@ public class PriceRequestValidator(IPriceValidator priceValidator) : IPriceReque
                 ValidationMessages.VatRateInvalid,
                 [nameof(priceRequest.VATRate)]));
 
-        return validationResults;
+        return ValueTask.FromResult<IEnumerable<ValidationResult>>(validationResults); ;
     }
 }

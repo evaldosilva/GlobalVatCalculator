@@ -3,6 +3,7 @@
 internal static class RouteDefinitions
 {
     public const string ApplicationJson = "application/json";
+    public const string AppName = "GlobalVatCalculator.API";
 
     public static class ContactInfo
     {

@@ -3,7 +3,7 @@ using Service.VatCalculator;
 
 namespace GlobalVatCalculator.API.Extensions;
 
-public static class BusinessServiceExtensions
+public static class BusinessServiceExtension
 {
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
     {
