@@ -74,6 +74,17 @@ public class GlobalVatCalculatorUnitTest
         Check.That(calculatedPrice?.VATValue).IsEqualTo(price.VATValue);
     }
 
+    [Theory, MemberData(nameof(OverflowPrices))]
+    public void Should_Not_calculate_When_set_multiple_calculation_overflow_input_values(Price price)
+    {
+        Check.ThatCode(async () =>
+        {
+            VatCalculatorService vatCalculatorService = new(GetPriceValidationHandlers());
+            var calculatedPrice = await vatCalculatorService.CalculateVat(price);
+        })
+            .Throws<OverflowException>();
+    }
+
     private static IEnumerable<IPriceValidationHandler> GetPriceValidationHandlers()
     {
         return
@@ -158,6 +169,29 @@ public class GlobalVatCalculatorUnitTest
                     GrossValue = 120.00m,
                     NetValue = null,
                     VATValue = null
+                }
+            }
+        };
+    }
+
+    public static TheoryData<Price> OverflowPrices
+    {
+        get => new()
+        {
+            { new()
+                {
+                    VATTaxRate = new VatRate(10),
+                    GrossValue = 2342342342342343232432423423m,
+                    NetValue = null,
+                    VATValue = null
+                }
+            },
+            { new()
+                {
+                    VATTaxRate = new VatRate(10),
+                    GrossValue = null,
+                    NetValue = null,
+                    VATValue = 23423423423423432324324234239m
                 }
             }
         };

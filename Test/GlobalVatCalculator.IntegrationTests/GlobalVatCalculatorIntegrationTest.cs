@@ -105,82 +105,118 @@ public class GlobalVatCalculatorIntegrationTest(WebApplicationFactory<Program> f
         Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
 
+    [Theory, MemberData(nameof(OverflowPriceRequests))]
+    public async Task Should_return_InternalServerError_When_send_multiple_overflow_amount_payloads(PriceRequest priceRequest)
+    {
+        string query = $"?vatRate={priceRequest.VATRate}&netValue={priceRequest.NetValue}&grossValue={priceRequest.GrossValue}&vatValue={priceRequest.VATValue}";
+        HttpClient client = _factory.CreateClient();
+        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(query);
+
+        using var response = await client.SendAsync(request);
+
+        Check.That(response.IsSuccessStatusCode).IsFalse();
+        Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+    }
+
     public static TheoryData<PriceRequest> WrongPriceRequests
     {
         get => new()
+        {
+            { new()
+                {
+                    VATRate = 20,
+                    GrossValue = 0m,
+                    NetValue = 0m,
+                    VATValue = 0m
+                }
+            },
+            { new()
+                {
+                    VATRate = 20,
+                    GrossValue = null,
+                    NetValue = null,
+                    VATValue = null
+                }
+            },
+            { new()
+                {
+                    VATRate = 20,
+                    GrossValue = 120.00m,
+                    NetValue = 100.00m,
+                    VATValue = 20.00m
+                }
+            },
+            { new()
+                {
+                    VATRate = 20,
+                    GrossValue = null,
+                    NetValue = 100.00m,
+                    VATValue = 20.00m
+                }
+            },
+            { new()
+                {
+                    VATRate = 20,
+                    GrossValue = 120.00m,
+                    NetValue = null,
+                    VATValue = 20.00m
+                }
+            },
+            { new()
+                {
+                    VATRate = 20,
+                    GrossValue = 120.00m,
+                    NetValue = 100.00m,
+                    VATValue = null
+                }
+            },
+            { new()
+                {
+                    VATRate = 99,
+                    GrossValue = 120.00m,
+                    NetValue = null,
+                    VATValue = null
+                }
+            },
+            { new()
+                {
+                    VATRate = 1,
+                    GrossValue = 120.00m,
+                    NetValue = null,
+                    VATValue = null
+                }
+            },
+            { new()
+                {
+                    VATRate = 0,
+                    GrossValue = 120.00m,
+                    NetValue = null,
+                    VATValue = null
+                }
+            }
+        };
+    }
+
+    public static TheoryData<PriceRequest> OverflowPriceRequests
     {
-        { new()
-            {
-                VATRate = 20,
-                GrossValue = 0m,
-                NetValue = 0m,
-                VATValue = 0m
+        get => new()
+        {
+            { new()
+                {
+                    VATRate = 10,
+                    GrossValue = 2342342342342343232432423423m,
+                    NetValue = null,
+                    VATValue = null
+                }
+            },
+            { new()
+                {
+                    VATRate = 10,
+                    GrossValue = null,
+                    NetValue = null,
+                    VATValue = 23423423423423432324324234239m
+                }
             }
-        },
-        { new()
-            {
-                VATRate = 20,
-                GrossValue = null,
-                NetValue = null,
-                VATValue = null
-            }
-        },
-        { new()
-            {
-                VATRate = 20,
-                GrossValue = 120.00m,
-                NetValue = 100.00m,
-                VATValue = 20.00m
-            }
-        },
-        { new()
-            {
-                VATRate = 20,
-                GrossValue = null,
-                NetValue = 100.00m,
-                VATValue = 20.00m
-            }
-        },
-        { new()
-            {
-                VATRate = 20,
-                GrossValue = 120.00m,
-                NetValue = null,
-                VATValue = 20.00m
-            }
-        },
-        { new()
-            {
-                VATRate = 20,
-                GrossValue = 120.00m,
-                NetValue = 100.00m,
-                VATValue = null
-            }
-        },
-        { new()
-            {
-                VATRate = 99,
-                GrossValue = 120.00m,
-                NetValue = null,
-                VATValue = null
-            }
-        },
-        { new()
-            {
-                VATRate = 1,
-                GrossValue = 120.00m,
-                NetValue = null,
-                VATValue = null
-            }
-        },
-        { new()
-            {
-                VATRate = 0,
-                GrossValue = 120.00m,
-                NetValue = null,
-                VATValue = null
-            }
-        }
-    };
+        };
     }
 }
