@@ -6,8 +6,6 @@ namespace GlobalVatCalculator.API.Extensions;
 public static class BusinessServiceExtension
 {
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
-    {
-        return services
-            .AddScoped<IVatCalculator, VatCalculatorService>();
-    }
+        =>  services
+                .AddScoped<IVatCalculator, VatCalculatorService>();
 }

@@ -1,14 +1,17 @@
 ﻿using Domain.VatCalculator.Interfaces.Validator;
 using Domain.VatCalculator.Models;
+using Domain.VatCalculator.Types;
 
 namespace Service.VatCalculator.Validator;
 
 public abstract class PriceValidationHandler : IPriceValidationHandler
 {
-    private PriceValidationHandler? _nextHandler;
+    private IPriceValidationHandler? _nextHandler;
     public bool IsValid { get; private set; } = false;
 
-    public PriceValidationHandler SetNext(PriceValidationHandler nextHandler)
+    public virtual PriceValidationHandlerType Type => PriceValidationHandlerType.None;
+
+    public IPriceValidationHandler SetNext(IPriceValidationHandler nextHandler)
     {
         _nextHandler = nextHandler;
         return _nextHandler;

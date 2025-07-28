@@ -9,11 +9,11 @@ namespace GlobalVatCalculator.API.Extensions;
 public static class RequestValidatorExtension
 {
     public static IServiceCollection AddRequestValidators(this IServiceCollection services)
-    {
-        return services
-            .AddScoped<PriceCalculatorFilter>()
+        => services
             .AddScoped<IPriceValidationHandler, PriceMissingValidator>()
+            .AddScoped<IPriceValidationHandler, PriceMultipleInputValidator>()
+            .AddScoped<IPriceValidationHandler, PriceVATTaxRateValidator>()
             .AddScoped<IPriceValidator, PriceValidator>()
-            .AddScoped<IPriceRequestValidator, PriceRequestValidator>();
+            .AddScoped<IPriceRequestValidator, PriceRequestValidator>()
+            .AddScoped<PriceCalculatorFilter>();
     }
-}

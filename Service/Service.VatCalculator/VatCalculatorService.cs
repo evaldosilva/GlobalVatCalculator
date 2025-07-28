@@ -1,22 +1,24 @@
 ﻿using Domain.VatCalculator.Interfaces.Service;
+using Domain.VatCalculator.Interfaces.Validator;
 using Domain.VatCalculator.Models;
+using Domain.VatCalculator.Types;
 using Service.VatCalculator.Validator;
 
 namespace Service.VatCalculator;
 
-public class VatCalculatorService : IVatCalculator
+public class VatCalculatorService(IEnumerable<IPriceValidationHandler> priceValidationHandlers) : IVatCalculator
 {
+    private readonly IEnumerable<IPriceValidationHandler> _priceValidationHandlers = priceValidationHandlers;
+
     public async ValueTask<Price> CalculateVat(Price price)
     {
-        PriceMissingValidator priceMissingValidator = new();
-        PriceMultipleInputValidator priceMultipleInputValidator = new();
-        PriceVATTaxRateValidator priceVATTaxRateValidator = new();
+        var validators = _priceValidationHandlers.First(h => h.Type == PriceValidationHandlerType.PriceMissingValidator)
+            .SetNext(_priceValidationHandlers
+                .First(h => h.Type == PriceValidationHandlerType.PriceMultipleInputValidator))
+            .SetNext(_priceValidationHandlers
+                .First(h => h.Type == PriceValidationHandlerType.PriceVATTaxRateValidator));
 
-        priceMissingValidator
-            .SetNext(priceMultipleInputValidator)
-            .SetNext(priceVATTaxRateValidator);
-
-        PriceValidator priceValidation = new(priceMissingValidator);
+        PriceValidator priceValidation = new(validators);
         priceValidation.Validate(price);
 
         if (priceValidation.IsValid())

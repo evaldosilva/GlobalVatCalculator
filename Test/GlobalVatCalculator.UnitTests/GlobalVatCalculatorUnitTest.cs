@@ -1,17 +1,18 @@
 ﻿using Domain.VatCalculator.Entities;
+using Domain.VatCalculator.Interfaces.Validator;
 using Domain.VatCalculator.Models;
 using NFluent;
 using Service.VatCalculator;
+using Service.VatCalculator.Validator;
 
 namespace GlobalVatCalculator.UnitTests;
 
 public class GlobalVatCalculatorUnitTest
 {
-    //     public void Should_When()
     [Fact]
     public async Task Should_calculate_When_set_Net_amount()
     {
-        VatCalculatorService vatCalculatorService = new();
+        VatCalculatorService vatCalculatorService = new(GetPriceValidationHandlers());
 
         Price price = new()
         {
@@ -29,7 +30,7 @@ public class GlobalVatCalculatorUnitTest
     [Fact]
     public async Task Should_calculate_When_set_Gross_amount()
     {
-        VatCalculatorService vatCalculatorService = new();
+        VatCalculatorService vatCalculatorService = new(GetPriceValidationHandlers());
 
         Price price = new()
         {
@@ -47,7 +48,7 @@ public class GlobalVatCalculatorUnitTest
     [Fact]
     public async Task Should_calculate_When_set_VAT_amount()
     {
-        VatCalculatorService vatCalculatorService = new();
+        VatCalculatorService vatCalculatorService = new(GetPriceValidationHandlers());
 
         Price price = new()
         {
@@ -65,12 +66,22 @@ public class GlobalVatCalculatorUnitTest
     [Theory, MemberData(nameof(WrongPrices))]
     public async Task Should_Not_calculate_When_set_multiple_invalid_input_values(Price price)
     {
-        VatCalculatorService vatCalculatorService = new();
+        VatCalculatorService vatCalculatorService = new(GetPriceValidationHandlers());
         var calculatedPrice = await vatCalculatorService.CalculateVat(price);
 
         Check.That(calculatedPrice?.GrossValue).IsEqualTo(price.GrossValue);
         Check.That(calculatedPrice?.NetValue).IsEqualTo(price.NetValue);
         Check.That(calculatedPrice?.VATValue).IsEqualTo(price.VATValue);
+    }
+
+    private static IEnumerable<IPriceValidationHandler> GetPriceValidationHandlers()
+    {
+        return
+        [
+            new PriceMissingValidator(),
+            new PriceMultipleInputValidator(),
+            new PriceVATTaxRateValidator()
+        ];
     }
 
     public static TheoryData<Price> WrongPrices
