@@ -1,4 +1,5 @@
 using GlobalVatCalculator.API.Extensions;
+using GlobalVatCalculator.API.Handlers;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using static GlobalVatCalculator.API.Constants.Routes.RouteDefinitions;
@@ -63,6 +64,8 @@ try
         options.MaximumBodySize = 1024 * 1024; // 1 MB
     });
 
+    builder.Services.AddExceptionHandler<ProblemExceptionHandler>();
+
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -79,6 +82,8 @@ try
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
         });
     }
+
+    app.UseExceptionHandler();
 
     app.UseHttpsRedirection();
 
