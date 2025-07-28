@@ -10,14 +10,9 @@ namespace GlobalVatCalculator.API.Controllers;
 
 [ApiController]
 [Route(RouteDefinitions.V1.Base)]
-public class VatCalculatorController : ControllerBase
+public class VatCalculatorController(IVatCalculator vatCalculator) : ControllerBase
 {
-    private readonly IVatCalculator _vatCalculator;
-
-    public VatCalculatorController(IVatCalculator vatCalculator)
-    {
-        _vatCalculator = vatCalculator;
-    }
+    private readonly IVatCalculator _vatCalculator = vatCalculator;
 
     [HttpPost(RouteDefinitions.V1.PriceCalculatorEndpoint)]
     [ProducesResponseType(typeof(PriceResult), StatusCodes.Status200OK)]
@@ -27,10 +22,13 @@ public class VatCalculatorController : ControllerBase
     [Consumes(RouteDefinitions.ApplicationJson)]
     [EndpointDescription(RouteDefinitions.V1.PriceCalculatorEndpointDesc)]
     [ServiceFilter(typeof(PriceCalculatorFilter))]
-    public async ValueTask<IActionResult> PriceCalculator([FromBody] PriceRequest priceRequest)
+    public async ValueTask<IActionResult> PriceCalculator([FromBody] PriceRequest priceRequest, CancellationToken cancellationToken)
     {
         var price = PriceRequestMapper.MapPriceRequestToPrice(priceRequest);
         var calculatedPrice = await _vatCalculator.CalculateVat(price);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
         return Ok(PriceResultMapper.MapPriceToPriceResult(calculatedPrice));
     }
 }

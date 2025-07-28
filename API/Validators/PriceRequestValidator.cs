@@ -18,7 +18,7 @@ public class PriceRequestValidator(IPriceValidator priceValidator, IEnumerable<I
         List<ValidationResult> validationResults = [];
         bool IsSomeAmountValid = false;
 
-        if (priceRequest?.NetValue == null || priceRequest?.NetValue == 0)
+        if (priceRequest?.NetValue is null || priceRequest?.NetValue == 0)
             validationResults.Add(CreateValidationResult(
                 string.Format(ValidationMessages.InvalidNonNumeric, priceRequest?.NetValue, nameof(priceRequest.NetValue)),
                 [nameof(priceRequest.NetValue)]));
@@ -26,7 +26,7 @@ public class PriceRequestValidator(IPriceValidator priceValidator, IEnumerable<I
             IsSomeAmountValid = true;
 
         if (IsSomeAmountValid is false)
-            if (priceRequest?.VATValue == null || priceRequest?.VATValue == 0)
+            if (priceRequest?.VATValue is null || priceRequest?.VATValue == 0)
                 validationResults.Add(CreateValidationResult(
                     string.Format(ValidationMessages.InvalidNonNumeric, priceRequest?.VATValue, nameof(priceRequest.VATValue)),
                     [nameof(priceRequest.VATValue)]));
@@ -34,7 +34,7 @@ public class PriceRequestValidator(IPriceValidator priceValidator, IEnumerable<I
                 IsSomeAmountValid = true;
 
         if (IsSomeAmountValid is false)
-            if (priceRequest?.GrossValue == null || priceRequest?.GrossValue == 0)
+            if (priceRequest?.GrossValue is null || priceRequest?.GrossValue == 0)
                 validationResults.Add(CreateValidationResult(
                     string.Format(ValidationMessages.InvalidNonNumeric, priceRequest?.GrossValue, nameof(priceRequest.GrossValue)),
                     [nameof(priceRequest.GrossValue)]));
@@ -78,6 +78,6 @@ public class PriceRequestValidator(IPriceValidator priceValidator, IEnumerable<I
         return ValueTask.FromResult<IEnumerable<ValidationResult>>(validationResults); ;
     }
 
-    private ValidationResult CreateValidationResult(string? errorMessage, IEnumerable<string>? memberNames)
+    private static ValidationResult CreateValidationResult(string? errorMessage, IEnumerable<string>? memberNames)
         => new(errorMessage, memberNames);
 }

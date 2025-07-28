@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace GlobalVatCalculator.API.Filters;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class PriceCalculatorFilter(ILogger<PriceCalculatorFilter> logger, IPriceRequestValidator priceRequestValidator) : Attribute, IAsyncActionFilter
+public class PriceCalculatorFilter(ILogger<PriceCalculatorFilter> logger, IPriceRequestValidator priceRequestValidator) 
+    : Attribute, IAsyncActionFilter
 {
     private readonly IPriceRequestValidator _priceRequestValidator = priceRequestValidator;
     private readonly ILogger<PriceCalculatorFilter> _logger = logger;

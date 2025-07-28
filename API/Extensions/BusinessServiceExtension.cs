@@ -7,5 +7,5 @@ public static class BusinessServiceExtension
 {
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         =>  services
-                .AddScoped<IVatCalculator, VatCalculatorService>();
+              .AddScoped<IVatCalculator, VatCalculatorService>();
 }
