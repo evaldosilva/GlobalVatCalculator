@@ -90,3 +90,5 @@ finally
 {
     log.LogInformation("Stopping {AppName}", AppName);
 }
+
+public partial class Program { }
