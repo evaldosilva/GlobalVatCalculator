@@ -56,6 +56,13 @@ try
         };
     });
 
+    builder.Services.AddResponseCaching(options =>
+    {
+        options.UseCaseSensitivePaths = false;
+        options.SizeLimit = 1024 * 1024; // 1 MB
+        options.MaximumBodySize = 1024 * 1024; // 1 MB
+    });
+
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -76,6 +83,8 @@ try
     app.UseHttpsRedirection();
 
     app.UseAuthorization();
+
+    app.UseResponseCaching();
 
     app.MapControllers();
 

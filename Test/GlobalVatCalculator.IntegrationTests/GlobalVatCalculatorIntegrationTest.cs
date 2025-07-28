@@ -1,9 +1,9 @@
 ﻿using GlobalVatCalculator.API.Requests;
+using GlobalVatCalculator.API.Results;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using NFluent;
 using System.Net;
-using System.Text;
 
 namespace GlobalVatCalculator.IntegrationTests;
 
@@ -11,15 +11,13 @@ public class GlobalVatCalculatorIntegrationTest(WebApplicationFactory<Program> f
 {
     private readonly WebApplicationFactory<Program> _factory = factory;
     private static readonly string _priceCalculatorEndpoint = "http://localhost:5044/api/v1/VatCalculator/PriceCalculator";
-    private const string _jsonMediaType = "application/json";
 
-    private static HttpRequestMessage CreatePriceCalculatorEndpointHttpRequest(string jsonPayload) 
+    private static HttpRequestMessage CreatePriceCalculatorEndpointHttpRequest(string queryParameter)
         => new()
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri(_priceCalculatorEndpoint),
-                Content = new StringContent(jsonPayload ?? string.Empty, Encoding.UTF8, _jsonMediaType)
-            };
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(string.Concat(_priceCalculatorEndpoint, queryParameter)),
+        };
 
     [Fact]
     public async Task Should_return_OK_When_send_valid_incomplete_payload()
@@ -30,19 +28,24 @@ public class GlobalVatCalculatorIntegrationTest(WebApplicationFactory<Program> f
             NetValue = 100
         };
 
-        var json = JsonConvert.SerializeObject(priceRequest);
-
+        string query = $"?vatRate={priceRequest.VATRate}&netValue={priceRequest.NetValue}";
         HttpClient client = _factory.CreateClient();
-        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(json);
+        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(query);
 
         using var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        string body = await response.Content.ReadAsStringAsync();
-
         Check.That(response.IsSuccessStatusCode).IsTrue();
         Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        Check.That(body).IsEqualIgnoringCase("{\"vatTaxRate\":13,\"netValue\":100.0,\"vatValue\":13.000,\"grossValue\":113.000}");
+
+        string body = await response.Content.ReadAsStringAsync();
+        var priceResult = JsonConvert.DeserializeObject<PriceResult>(body);
+
+        Check.That(priceResult).IsNotNull();
+        Check.That(priceResult?.VATTaxRate).IsEqualTo(13);
+        Check.That(priceResult?.NetValue).IsEqualTo(100);
+        Check.That(priceResult?.GrossValue).IsEqualTo(113);
+        Check.That(priceResult?.VATValue).IsEqualTo(13);
     }
 
     [Fact]
@@ -56,42 +59,45 @@ public class GlobalVatCalculatorIntegrationTest(WebApplicationFactory<Program> f
             VATValue = null
         };
 
-        var json = JsonConvert.SerializeObject(priceRequest);
-
+        string query = $"?vatRate={priceRequest.VATRate}&netValue={priceRequest.NetValue}&grossValue={priceRequest.GrossValue}&vatValue={priceRequest.VATValue}";
         HttpClient client = _factory.CreateClient();
-        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(json);
+        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(query);
 
         using var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        string body = await response.Content.ReadAsStringAsync();
-
         Check.That(response.IsSuccessStatusCode).IsTrue();
         Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        Check.That(body).IsEqualIgnoringCase("{\"vatTaxRate\":10,\"netValue\":1000.0,\"vatValue\":100.00,\"grossValue\":1100.00}");
+
+        string body = await response.Content.ReadAsStringAsync();
+        var priceResult = JsonConvert.DeserializeObject<PriceResult>(body);
+
+        Check.That(priceResult).IsNotNull();
+        Check.That(priceResult?.VATTaxRate).IsEqualTo(10);
+        Check.That(priceResult?.NetValue).IsEqualTo(1000);
+        Check.That(priceResult?.GrossValue).IsEqualTo(1100);
+        Check.That(priceResult?.VATValue).IsEqualTo(100);
     }
 
     [Fact]
     public async Task Should_return_BadRequest_When_send_null_or_empty_payload()
     {
         HttpClient client = _factory.CreateClient();
-        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(null);
+        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(string.Empty);
 
         using var response = await client.SendAsync(request);
         string body = await response.Content.ReadAsStringAsync();
 
         Check.That(response.IsSuccessStatusCode).IsFalse();
         Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
-        Check.That(body).Contains("A non-empty request body is required.");
     }
 
     [Theory, MemberData(nameof(WrongPriceRequests))]
-    public async Task Should_return_BadRequest_When_send_multiple_invalid_payloads(PriceRequest price)
+    public async Task Should_return_BadRequest_When_send_multiple_invalid_payloads(PriceRequest priceRequest)
     {
-        var json = JsonConvert.SerializeObject(price);
-
+        string query = $"?vatRate={priceRequest.VATRate}&netValue={priceRequest.NetValue}&grossValue={priceRequest.GrossValue}&vatValue={priceRequest.VATValue}";
         HttpClient client = _factory.CreateClient();
-        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(json);
+        HttpRequestMessage request = CreatePriceCalculatorEndpointHttpRequest(query);
 
         using var response = await client.SendAsync(request);
 

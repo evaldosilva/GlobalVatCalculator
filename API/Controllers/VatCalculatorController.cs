@@ -5,6 +5,7 @@ using GlobalVatCalculator.API.Mappings;
 using GlobalVatCalculator.API.Requests;
 using GlobalVatCalculator.API.Results;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 namespace GlobalVatCalculator.API.Controllers;
 
@@ -14,15 +15,15 @@ public class VatCalculatorController(IVatCalculator vatCalculator) : ControllerB
 {
     private readonly IVatCalculator _vatCalculator = vatCalculator;
 
-    [HttpPost(RouteDefinitions.V1.PriceCalculatorEndpoint)]
+    [HttpGet(RouteDefinitions.V1.PriceCalculatorEndpoint)]
     [ProducesResponseType(typeof(PriceResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [Produces(RouteDefinitions.ApplicationJson)]
-    [Consumes(RouteDefinitions.ApplicationJson)]
+    [Produces(MediaTypeNames.Application.Json)]
     [EndpointDescription(RouteDefinitions.V1.PriceCalculatorEndpointDesc)]
     [ServiceFilter(typeof(PriceCalculatorFilter))]
-    public async ValueTask<IActionResult> PriceCalculator([FromBody] PriceRequest priceRequest, CancellationToken cancellationToken)
+    [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, NoStore = false, VaryByQueryKeys = ["*"])]
+    public async ValueTask<IActionResult> PriceCalculator([FromQuery] PriceRequest priceRequest, CancellationToken cancellationToken)
     {
         var price = PriceRequestMapper.MapPriceRequestToPrice(priceRequest);
         var calculatedPrice = await _vatCalculator.CalculateVat(price);
