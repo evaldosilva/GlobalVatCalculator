@@ -26,6 +26,8 @@ public class ProblemExceptionHandler(IProblemDetailsService problemDetailsServic
 
         _logger.LogWarning("Handled exception ocurried. Details: {exceptionMessage}", exception.Message);
 
+        httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+
         return await _problemDetailsService.TryWriteAsync(
                 new ProblemDetailsContext
                 {
