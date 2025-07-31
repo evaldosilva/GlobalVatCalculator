@@ -115,7 +115,7 @@ public class GlobalVatCalculatorIntegrationTest(WebApplicationFactory<Program> f
         using var response = await client.SendAsync(request);
 
         Check.That(response.IsSuccessStatusCode).IsFalse();
-        Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
 
     public static TheoryData<PriceRequest> WrongPriceRequests
