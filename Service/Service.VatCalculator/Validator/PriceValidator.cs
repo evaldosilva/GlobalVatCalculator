@@ -7,12 +7,7 @@ public class PriceValidator(IPriceValidationHandler priceValidationHandler) : IP
 {
     private IPriceValidationHandler _priceValidationHandler = priceValidationHandler;
 
-    public bool IsValid() => _priceValidationHandler.IsValid;
-
-    public void Validate(Price price)
-    {
-        _priceValidationHandler.Handle(price);
-    }
+    public bool Validate(Price price) => _priceValidationHandler.Handle(price);
 
     public void SetHandler(IPriceValidationHandler priceValidationHandler)
     {

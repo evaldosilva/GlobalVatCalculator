@@ -1,5 +1,4 @@
-﻿using Domain.VatCalculator.Interfaces.Calculator;
-using Domain.VatCalculator.Interfaces.Service;
+﻿using Domain.VatCalculator.Interfaces.Service;
 using Domain.VatCalculator.Interfaces.Validator;
 using Domain.VatCalculator.Models;
 using Domain.VatCalculator.Types;
@@ -14,6 +13,14 @@ public class VatCalculatorService(IEnumerable<IPriceValidationHandler> priceVali
 
     public async ValueTask<Price> CalculateVat(Price price)
     {
+        if (ValidatePrice(price))
+            return await CalculatorFactory.GetCalculator(price.CalculationType).Calculate(price);
+        else
+            return await ValueTask.FromResult(price);
+    }
+
+    private bool ValidatePrice(Price price)
+    {
         IPriceValidationHandler validators = _priceValidationHandlers
             .First(h => h.Type == PriceValidationHandlerType.PriceMissingValidator);
 
@@ -22,21 +29,6 @@ public class VatCalculatorService(IEnumerable<IPriceValidationHandler> priceVali
             .SetNext(_priceValidationHandlers.First(h => h.Type == PriceValidationHandlerType.PriceVATTaxRateValidator));
 
         PriceValidator priceValidation = new(validators);
-        priceValidation.Validate(price);
-
-        ICalculator calculator;
-        if (priceValidation.IsValid())
-            if (price.NetValue.HasValue && price.NetValue > 0)
-                calculator = CalculatorFactory.GetCalculator(CalculationType.NetValueCalculation);
-            else if (price.GrossValue.HasValue && price.GrossValue > 0)
-                calculator = CalculatorFactory.GetCalculator(CalculationType.GrossValueCalculation);
-            else if (price.VATValue.HasValue && price.VATValue > 0)
-                calculator = CalculatorFactory.GetCalculator(CalculationType.VATValueCalculation);
-            else
-                calculator = CalculatorFactory.GetCalculator();
-        else
-            calculator = CalculatorFactory.GetCalculator();
-
-        return await calculator.Calculate(price);
+        return priceValidation.Validate(price);
     }
 }

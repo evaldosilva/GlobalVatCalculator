@@ -8,5 +8,4 @@ public interface IPriceValidationHandler
     PriceValidationHandlerType Type { get; }
     bool Handle(Price price);
     IPriceValidationHandler SetNext(IPriceValidationHandler nextHandler);
-    bool IsValid { get; }
 }

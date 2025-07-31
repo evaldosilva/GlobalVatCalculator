@@ -7,7 +7,6 @@ namespace Service.VatCalculator.Validator;
 public abstract class PriceValidationHandler : IPriceValidationHandler
 {
     private IPriceValidationHandler? _nextHandler;
-    public bool IsValid { get; private set; } = false;
 
     public virtual PriceValidationHandlerType Type => PriceValidationHandlerType.None;
 
@@ -19,24 +18,15 @@ public abstract class PriceValidationHandler : IPriceValidationHandler
 
     public bool Handle(Price price)
     {
-        if (!DoHandle(price))
-        {
-            IsValid = false;
-            return IsValid;
-        }
-        else
+        if (DoHandle(price))
         {
             if (_nextHandler != null)
-            {
-                IsValid = _nextHandler.Handle(price);
-                return IsValid;
-            }
+                return _nextHandler.Handle(price);
             else
-            {
-                IsValid = true;
-                return IsValid;
-            }
+                return true;
         }
+        else
+            return false;
     }
 
     protected abstract bool DoHandle(Price price);

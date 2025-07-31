@@ -4,7 +4,6 @@ namespace Domain.VatCalculator.Interfaces.Validator;
 
 public interface IPriceValidator
 {
-    void Validate(Price price);
-    bool IsValid();
+    bool Validate(Price price);
     void SetHandler(IPriceValidationHandler priceValidationHandler);
 }

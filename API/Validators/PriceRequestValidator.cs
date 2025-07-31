@@ -55,22 +55,19 @@ public class PriceRequestValidator(IPriceValidator priceValidator, IEnumerable<I
         var price = PriceRequestMapper.MapPriceRequestToPrice(priceRequest);
 
         _priceValidator.SetHandler(_priceValidationHandlers.First(h => h.Type == PriceValidationHandlerType.PriceMissingValidator));
-        _priceValidator.Validate(price);
-        if (_priceValidator.IsValid() is not true)
+        if (_priceValidator.Validate(price) is not true)
             validationResults.Add(CreateValidationResult(
                 ValidationMessages.PricesMissingOrInvalid,
                 [nameof(priceRequest.VATValue), nameof(priceRequest.NetValue), nameof(priceRequest.GrossValue)]));
 
         _priceValidator.SetHandler(_priceValidationHandlers.First(h => h.Type == PriceValidationHandlerType.PriceMultipleInputValidator));
-        _priceValidator.Validate(price);
-        if (_priceValidator.IsValid() is not true)
+        if (_priceValidator.Validate(price) is not true)
             validationResults.Add(CreateValidationResult(
                 ValidationMessages.PricesMultipleInput,
                 [nameof(priceRequest.VATValue), nameof(priceRequest.NetValue), nameof(priceRequest.GrossValue)]));
 
         _priceValidator.SetHandler(_priceValidationHandlers.First(h => h.Type == PriceValidationHandlerType.PriceVATTaxRateValidator));
-        _priceValidator.Validate(price);
-        if (_priceValidator.IsValid() is not true)
+        if (_priceValidator.Validate(price) is not true)
             validationResults.Add(CreateValidationResult(
                 ValidationMessages.VatRateInvalid,
                 [nameof(priceRequest.VATRate)]));

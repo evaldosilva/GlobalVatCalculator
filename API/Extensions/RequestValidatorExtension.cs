@@ -10,9 +10,9 @@ public static class RequestValidatorExtension
 {
     public static IServiceCollection AddRequestValidators(this IServiceCollection services)
         => services
-            .AddScoped<IPriceValidationHandler, PriceMissingValidator>()
-            .AddScoped<IPriceValidationHandler, PriceMultipleInputValidator>()
-            .AddScoped<IPriceValidationHandler, PriceVATTaxRateValidator>()
+            .AddSingleton<IPriceValidationHandler, PriceMissingValidator>()
+            .AddSingleton<IPriceValidationHandler, PriceMultipleInputValidator>()
+            .AddSingleton<IPriceValidationHandler, PriceVATTaxRateValidator>()
             .AddScoped<IPriceValidator, PriceValidator>()
             .AddScoped<IPriceRequestValidator, PriceRequestValidator>()
             .AddScoped<PriceCalculatorFilter>();
