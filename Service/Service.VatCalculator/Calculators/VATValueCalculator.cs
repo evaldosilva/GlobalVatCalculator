@@ -5,15 +5,16 @@ namespace Service.VatCalculator.Calculators;
 
 public class VATValueCalculator : ICalculator
 {
-    public async ValueTask<Price> Calculate(Price price)
-    {
-        Price calculatedPrice = new()
+    public async Task<Price> Calculate(Price price) =>
+        await Task.Run(() =>
         {
-            VATValue = price.VATValue,
-            VATTaxRate = new(price.VATTaxRate.Rate)
-        };
-        calculatedPrice.NetValue = decimal.Round((decimal)(calculatedPrice.VATValue / (decimal)(calculatedPrice.VATTaxRate.Rate / 100)), 2, MidpointRounding.ToEven);
-        calculatedPrice.GrossValue = decimal.Round((decimal)(calculatedPrice.NetValue + calculatedPrice.VATValue), 2, MidpointRounding.ToEven);
-        return await ValueTask.FromResult(calculatedPrice);
-    }
+            Price calculatedPrice = new()
+            {
+                VATValue = price.VATValue,
+                VATTaxRate = new(price.VATTaxRate.Rate)
+            };
+            calculatedPrice.NetValue = decimal.Round((decimal)(calculatedPrice.VATValue / (decimal)(calculatedPrice.VATTaxRate.Rate / 100)), 2, MidpointRounding.ToEven);
+            calculatedPrice.GrossValue = decimal.Round((decimal)(calculatedPrice.NetValue + calculatedPrice.VATValue), 2, MidpointRounding.ToEven);
+            return calculatedPrice;
+        });
 }

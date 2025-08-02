@@ -10,5 +10,5 @@ public interface IPriceRequestValidator
     /// </summary>
     /// <param name="priceRequest">The PriceRequest payload</param>
     /// <returns>An error list of failed validations</returns>
-    ValueTask<IEnumerable<ValidationResult>> Validate(PriceRequest priceRequest);
+    Task<IEnumerable<ValidationResult>> Validate(PriceRequest priceRequest);
 }

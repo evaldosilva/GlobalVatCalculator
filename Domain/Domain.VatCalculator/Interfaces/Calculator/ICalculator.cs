@@ -9,5 +9,5 @@ public interface ICalculator
     /// </summary>
     /// <param name="price">Price to be calculated</param>
     /// <returns>A new calculated price</returns>
-    ValueTask<Price> Calculate(Price price);
+    Task<Price> Calculate(Price price);
 }

@@ -23,7 +23,7 @@ public class VatCalculatorController(IVatCalculator vatCalculator) : ControllerB
     [EndpointDescription(RouteDefinitions.V1.PriceCalculatorEndpointDesc)]
     [ServiceFilter(typeof(PriceCalculatorFilter))]
     [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, NoStore = false, VaryByQueryKeys = ["*"])]
-    public async ValueTask<IActionResult> PriceCalculator([FromQuery] PriceRequest priceRequest, CancellationToken cancellationToken)
+    public async Task<IActionResult> PriceCalculator([FromQuery] PriceRequest priceRequest, CancellationToken cancellationToken)
     {
         var price = PriceRequestMapper.MapPriceRequestToPrice(priceRequest);
         var calculatedPrice = await _vatCalculator.CalculateVat(price);

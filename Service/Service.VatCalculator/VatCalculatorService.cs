@@ -11,12 +11,12 @@ public class VatCalculatorService(IEnumerable<IPriceValidationHandler> priceVali
 {
     private readonly IEnumerable<IPriceValidationHandler> _priceValidationHandlers = priceValidationHandlers;
 
-    public async ValueTask<Price> CalculateVat(Price price)
+    public async Task<Price> CalculateVat(Price price)
     {
         if (ValidatePrice(price))
-            return await CalculatorFactory.GetCalculator(price.CalculationType).Calculate(price);
+            return await CalculatorFactory.GetCalculator(price).Calculate(price);
         else
-            return await ValueTask.FromResult(price);
+            return await Task.FromResult(price);
     }
 
     private bool ValidatePrice(Price price)

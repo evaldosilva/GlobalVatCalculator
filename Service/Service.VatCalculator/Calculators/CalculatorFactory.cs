@@ -1,18 +1,26 @@
 ﻿using Domain.VatCalculator.Interfaces.Calculator;
-using Domain.VatCalculator.Types;
+using Domain.VatCalculator.Models;
 
 namespace Service.VatCalculator.Calculators;
 
 public static class CalculatorFactory
 {
-    private static readonly ICalculator _defaultCalculator = new DefaultCalculator();
-    private static readonly Dictionary<CalculationType, ICalculator> _calculators = new()
+    public static ICalculator GetCalculator(Price price)
     {
-        { CalculationType.NetValueCalculation, new NetValueCalculator() },
-        { CalculationType.GrossValueCalculation, new GrossValueCalculator() },
-        { CalculationType.VATValueCalculation, new VATValueCalculator() }
-    };
+        if (ShouldCalculateByNet(price))
+            return new NetValueCalculator();
+        else if (ShouldCalculateByGross(price))
+            return new GrossValueCalculator();
+        else if (ShouldCalculateByVat(price))
+            return new VATValueCalculator();
+        else
+            return new DefaultCalculator();
+    }
 
-    public static ICalculator GetCalculator(CalculationType calculationType = CalculationType.Default)
-        => _calculators.GetValueOrDefault(calculationType, _defaultCalculator);
+    private static bool ShouldCalculateByGross(Price price) =>
+        price.GrossValue.HasValue && price.GrossValue > 0 && !price.VATValue.HasValue && !price.NetValue.HasValue;
+    private static bool ShouldCalculateByVat(Price price) =>
+        price.VATValue.HasValue && price.VATValue > 0 && !price.GrossValue.HasValue && !price.NetValue.HasValue;
+    private static bool ShouldCalculateByNet(Price price) =>
+        price.NetValue.HasValue && price.NetValue > 0 && !price.VATValue.HasValue && !price.GrossValue.HasValue;
 }

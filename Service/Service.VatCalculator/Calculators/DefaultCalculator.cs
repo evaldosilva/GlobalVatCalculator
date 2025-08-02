@@ -5,5 +5,5 @@ namespace Service.VatCalculator.Calculators;
 
 public class DefaultCalculator : ICalculator
 {
-    public async ValueTask<Price> Calculate(Price price) => await ValueTask.FromResult(price);
+    public async Task<Price> Calculate(Price price) => await Task.FromResult(price);
 }

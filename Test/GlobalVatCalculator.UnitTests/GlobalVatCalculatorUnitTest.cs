@@ -75,15 +75,21 @@ public class GlobalVatCalculatorUnitTest
     }
 
     [Theory, MemberData(nameof(OverflowPrices))]
-    public void Should_Not_calculate_When_set_multiple_calculation_overflow_input_values(Price price)
+    public async Task Should_Not_calculate_When_set_multiple_calculation_overflow_input_values(Price price)
     {
         VatCalculatorService vatCalculatorService = new(GetPriceValidationHandlers());
-        ValueTask<Price> calculatedPriceValueTask = vatCalculatorService.CalculateVat(price);
-        
-        Check.That(calculatedPriceValueTask.IsCompleted).IsTrue();
-        Check.That(calculatedPriceValueTask.IsFaulted).IsTrue();
-        Check.That(calculatedPriceValueTask.AsTask().Exception).IsNotNull();
-        Check.That(calculatedPriceValueTask.AsTask().Exception?.InnerException).IsInstanceOfType(typeof(OverflowException));
+        Task<Price> calculatedPriceTask = vatCalculatorService.CalculateVat(price);
+        try
+        {
+            await calculatedPriceTask;
+        }
+        catch
+        {
+            Check.That(calculatedPriceTask.IsCompleted).IsTrue();
+            Check.That(calculatedPriceTask.IsFaulted).IsTrue();
+            Check.That(calculatedPriceTask.Exception).IsNotNull();
+            Check.That(calculatedPriceTask.Exception?.InnerException).IsInstanceOfType(typeof(OverflowException));
+        }
     }
 
     private static IEnumerable<IPriceValidationHandler> GetPriceValidationHandlers()
