@@ -13,8 +13,8 @@ public class NetValueCalculator : ICalculator
                 NetValue = price.NetValue,
                 VATTaxRate = new(price.VATTaxRate.Rate)
             };
-            calculatedPrice.VATValue = decimal.Round((decimal)(calculatedPrice.NetValue * (decimal)(calculatedPrice.VATTaxRate.Rate / 100)), 2, MidpointRounding.ToEven);
-            calculatedPrice.GrossValue = decimal.Round((decimal)(calculatedPrice.NetValue + calculatedPrice.VATValue), 2, MidpointRounding.ToEven);
+            calculatedPrice.VATValue = decimal.Round((decimal)(calculatedPrice.NetValue! * (decimal)(calculatedPrice.VATTaxRate.Rate / 100)), 2, MidpointRounding.ToEven);
+            calculatedPrice.GrossValue = decimal.Round((decimal)(calculatedPrice.NetValue! + calculatedPrice.VATValue), 2, MidpointRounding.ToEven);
             return calculatedPrice;
         });
 }

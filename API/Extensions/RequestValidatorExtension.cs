@@ -13,7 +13,6 @@ public static class RequestValidatorExtension
             .AddSingleton<IPriceValidationHandler, PriceMissingValidator>()
             .AddSingleton<IPriceValidationHandler, PriceMultipleInputValidator>()
             .AddSingleton<IPriceValidationHandler, PriceVATTaxRateValidator>()
-            .AddScoped<IPriceValidator, PriceValidator>()
             .AddScoped<IPriceRequestValidator, PriceRequestValidator>()
             .AddScoped<PriceCalculatorFilter>();
     }

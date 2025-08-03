@@ -11,10 +11,10 @@ public class VATValueCalculator : ICalculator
             Price calculatedPrice = new()
             {
                 VATValue = price.VATValue,
-                VATTaxRate = new(price.VATTaxRate.Rate)
+                VATTaxRate = new(price.VATTaxRate!.Rate)
             };
-            calculatedPrice.NetValue = decimal.Round((decimal)(calculatedPrice.VATValue / (decimal)(calculatedPrice.VATTaxRate.Rate / 100)), 2, MidpointRounding.ToEven);
-            calculatedPrice.GrossValue = decimal.Round((decimal)(calculatedPrice.NetValue + calculatedPrice.VATValue), 2, MidpointRounding.ToEven);
+            calculatedPrice.NetValue = decimal.Round((decimal)(calculatedPrice.VATValue! / (decimal)(calculatedPrice.VATTaxRate.Rate / 100)), 2, MidpointRounding.ToEven);
+            calculatedPrice.GrossValue = decimal.Round((decimal)(calculatedPrice.NetValue + calculatedPrice.VATValue!), 2, MidpointRounding.ToEven);
             return calculatedPrice;
         });
 }

@@ -2,6 +2,7 @@
 using Domain.VatCalculator.Interfaces.Validator;
 using Domain.VatCalculator.Models;
 using Domain.VatCalculator.Types;
+using Domain.VatCalculator.Validation;
 using Service.VatCalculator.Calculators;
 using Service.VatCalculator.Validator;
 
@@ -13,13 +14,14 @@ public class VatCalculatorService(IEnumerable<IPriceValidationHandler> priceVali
 
     public async Task<Price> CalculateVat(Price price)
     {
-        if (ValidatePrice(price))
+        if ((await ValidatePrice(price)).IsSuccess)
             return await CalculatorFactory.GetCalculator(price).Calculate(price);
         else
             return await Task.FromResult(price);
     }
 
-    private bool ValidatePrice(Price price)
+
+    public async Task<Result> ValidatePrice(Price price)
     {
         IPriceValidationHandler validators = _priceValidationHandlers
             .First(h => h.Type == PriceValidationHandlerType.PriceMissingValidator);
@@ -29,6 +31,6 @@ public class VatCalculatorService(IEnumerable<IPriceValidationHandler> priceVali
             .SetNext(_priceValidationHandlers.First(h => h.Type == PriceValidationHandlerType.PriceVATTaxRateValidator));
 
         PriceValidator priceValidation = new(validators);
-        return priceValidation.Validate(price);
+        return await priceValidation.Validate(price);
     }
 }

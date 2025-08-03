@@ -13,7 +13,7 @@ public static class PriceRequestMapper
             NetValue = priceRequest?.NetValue,
             GrossValue = priceRequest?.GrossValue,
             VATValue = priceRequest?.VATValue,
-            VATTaxRate = new VatRate(priceRequest.VATRate)
+            VATTaxRate = new VatRate(priceRequest!.VATRate)
         };
     }
 }

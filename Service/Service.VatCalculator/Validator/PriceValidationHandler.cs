@@ -1,6 +1,7 @@
 ﻿using Domain.VatCalculator.Interfaces.Validator;
 using Domain.VatCalculator.Models;
 using Domain.VatCalculator.Types;
+using Domain.VatCalculator.Validation;
 
 namespace Service.VatCalculator.Validator;
 
@@ -16,18 +17,19 @@ public abstract class PriceValidationHandler : IPriceValidationHandler
         return _nextHandler;
     }
 
-    public bool Handle(Price price)
+    public async Task<Result> Handle(Price price)
     {
-        if (DoHandle(price))
+        Result result = DoHandle(price);
+        if (result.IsSuccess)
         {
             if (_nextHandler != null)
-                return _nextHandler.Handle(price);
+                return await _nextHandler.Handle(price);
             else
-                return true;
+                return await Task.FromResult(Result.Success());
         }
         else
-            return false;
+            return await Task.FromResult(result);
     }
 
-    protected abstract bool DoHandle(Price price);
+    protected abstract Result DoHandle(Price price);
 }

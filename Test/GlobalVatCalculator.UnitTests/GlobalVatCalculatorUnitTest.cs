@@ -74,6 +74,14 @@ public class GlobalVatCalculatorUnitTest
         Check.That(calculatedPrice?.VATValue).IsEqualTo(price.VATValue);
     }
 
+    [Theory, MemberData(nameof(WrongPrices))]
+    public async Task Should_Not_pass_validation_When_set_multiple_invalid_input_values(Price price)
+    {
+        VatCalculatorService vatCalculatorService = new(GetPriceValidationHandlers());
+        var validatedPrice = await vatCalculatorService.ValidatePrice(price);
+        Check.That(validatedPrice.IsFailure).IsTrue();
+    }
+
     [Theory, MemberData(nameof(OverflowPrices))]
     public async Task Should_Not_calculate_When_set_multiple_calculation_overflow_input_values(Price price)
     {
